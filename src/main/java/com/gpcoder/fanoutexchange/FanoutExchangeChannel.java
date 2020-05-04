@@ -5,7 +5,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 public class FanoutExchangeChannel {
 
@@ -40,9 +39,6 @@ public class FanoutExchangeChannel {
         // basicConsume - ( queue, autoAck, deliverCallback, cancelCallback)
         channel.basicConsume(queueName, true, ((consumerTag, message) -> {
             System.out.println("[Received] [" + queueName + "]: " + new String(message.getBody()));
-
-            // Release right after received one message
-            // release();
         }), consumerTag -> {
             System.out.println(consumerTag);
         });
@@ -52,17 +48,5 @@ public class FanoutExchangeChannel {
         // basicPublish - ( exchange, routingKey, basicProperties, body)
         System.out.println("[Send]: " + message);
         channel.basicPublish(exchangeName, "", null, message.getBytes());
-
-        // Release right after published one message
-        // release();
-    }
-
-    public void release() {
-        try {
-            channel.close();
-            connection.close();
-        } catch (IOException | TimeoutException e) {
-            e.printStackTrace();
-        }
     }
 }

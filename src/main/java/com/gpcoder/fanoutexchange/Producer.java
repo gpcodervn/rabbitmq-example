@@ -5,16 +5,11 @@ import com.rabbitmq.client.Connection;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import static com.gpcoder.fanoutexchange.Constant.EXCHANGE_NAME;
+import static com.gpcoder.fanoutexchange.Constant.*;
 
 public class Producer {
 
-    private String queueName;
     private FanoutExchangeChannel channel;
-
-    public Producer(String queueName) {
-        this.queueName = queueName;
-    }
 
     public void start() throws IOException, TimeoutException {
         // Create connection
@@ -27,10 +22,12 @@ public class Producer {
         channel.declareExchange();
 
         // Create queues
-        channel.declareQueues(queueName);
+        channel.declareQueues(DEV_QUEUE_NAME, MANAGER_QUEUE_NAME, GENERAL_QUEUE_NAME);
 
-        // Binding queues witho routing key
-        channel.performQueueBinding(queueName);
+        // Binding queues without routing key
+        channel.performQueueBinding(DEV_QUEUE_NAME);
+        channel.performQueueBinding(MANAGER_QUEUE_NAME);
+        channel.performQueueBinding(GENERAL_QUEUE_NAME);
     }
 
     public void send(String message) throws IOException {
