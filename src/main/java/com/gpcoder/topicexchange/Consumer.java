@@ -5,18 +5,11 @@ import com.rabbitmq.client.Connection;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import static com.gpcoder.topicexchange.Constant.EXCHANGE_NAME;
+import static com.gpcoder.topicexchange.Constant.*;
 
 public class Consumer {
 
-    private String queueName;
-    private String routingKey;
     private TopicExchangeChannel channel;
-
-    public Consumer(String queueName, String routingKey) {
-        this.queueName = queueName;
-        this.routingKey = routingKey;
-    }
 
     public void start() throws IOException, TimeoutException {
         // Create connection
@@ -29,15 +22,17 @@ public class Consumer {
         channel.declareExchange();
 
         // Create queues
-        channel.declareQueues(queueName);
+        channel.declareQueues(JAVA_QUEUE_NAME, GENERAL_QUEUE_NAME);
 
         // Binding queues with routing key
-        channel.performQueueBinding(queueName, routingKey);
+        channel.performQueueBinding(JAVA_QUEUE_NAME, JAVA_ROUTING_KEY);
+        channel.performQueueBinding(GENERAL_QUEUE_NAME, GPCODER_ROUTING_KEY);
     }
 
     public void subscribe() throws IOException {
         // Subscribe message
-        channel.subscribeMessage(queueName);
+        channel.subscribeMessage(JAVA_QUEUE_NAME);
+        channel.subscribeMessage(GENERAL_QUEUE_NAME);
     }
 
 }
