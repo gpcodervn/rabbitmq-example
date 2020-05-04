@@ -5,18 +5,11 @@ import com.rabbitmq.client.Connection;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import static com.gpcoder.directexchange.Constant.EXCHANGE_NAME;
+import static com.gpcoder.directexchange.Constant.*;
 
 public class Consumer {
 
-    private String queueName;
-    private String routingKey;
     private DirectExchangeChannel channel;
-
-    public Consumer(String queueName, String routingKey) {
-        this.queueName = queueName;
-        this.routingKey = routingKey;
-    }
 
     public void start() throws IOException, TimeoutException {
         // Create connection
@@ -29,15 +22,19 @@ public class Consumer {
         channel.declareExchange();
 
         // Create queues
-        channel.declareQueues(queueName);
+        channel.declareQueues(DEV_QUEUE_NAME, MANAGER_QUEUE_NAME, GENERAL_QUEUE_NAME);
 
         // Binding queues with routing keys
-        channel.performQueueBinding(queueName, routingKey);
+        channel.performQueueBinding(DEV_QUEUE_NAME, DEV_ROUTING_KEY);
+        channel.performQueueBinding(MANAGER_QUEUE_NAME, MANAGER_ROUTING_KEY);
+        channel.performQueueBinding(GENERAL_QUEUE_NAME, GENERAL_ROUTING_KEY);
     }
 
     public void subscribe() throws IOException {
         // Subscribe message
-        channel.subscribeMessage(queueName);
+        channel.subscribeMessage(DEV_QUEUE_NAME);
+        channel.subscribeMessage(MANAGER_QUEUE_NAME);
+        channel.subscribeMessage(GENERAL_QUEUE_NAME);
     }
 
 }
